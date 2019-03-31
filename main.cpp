@@ -32,17 +32,6 @@ struct ip_header
 
 struct tcp_header
 {
-    //    unsigned char sport[2];
-    //    unsigned char dport[2];
-    //    unsigned int sequence_number;
-    //    unsigned int acknum;
-    //    unsigned short Header_Length:4;
-    //    unsigned short Reserved:4;
-    //    unsigned short Flags:8;
-    //    unsigned short window;
-    //    unsigned short cheaksum;
-    //    unsigned short Urgentpoint;
-
     unsigned char sport[2];
     unsigned char dport[2];
     unsigned int sequence_number;
@@ -63,11 +52,10 @@ struct tcp_header
     unsigned short urgentpoint;
 };
 
-//struct http_data;
 
 void usage()
 {
-    printf("syntax: pcap_test <interface>\n");  //
+    printf("syntax: pcap_test <interface>\n");
     printf("sample: pcap_test wlan0\n");
 }
 
@@ -92,7 +80,8 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    while (true) {
+    while (true)
+    {
 
         struct pcap_pkthdr* header;  // header len
         const u_char* packet;   // packet data , hexa code can see vi
@@ -150,6 +139,7 @@ int main(int argc, char* argv[])
         }
 
         printf("\n");
+
 
 
         // ip
@@ -236,23 +226,12 @@ int main(int argc, char* argv[])
         printf("\n");
 
 
+
         //http
 
 
 
-
-
         const u_char* http_data;
-
-
-
-
-
-        //     printf("len = %d\n", sizeof(http_data));
-
-
-        //        hd = (packet+(iph->len)-((iph->Header_Length)<<2)-((th->Header_Length)<<2));
-
 
         http_data = (packet+14+4*(iph->Header_Length)+4*(th->Header_len));
 
@@ -260,11 +239,24 @@ int main(int argc, char* argv[])
         printf("=======HTTP DATA=======\n\n");
 
 
+        if(strlen((char *)http_data) > 16)
 
-            printf("%s\n", http_data);
+        {
+
+            for(i=0; i<=15; i++)
+
+            {
+                if(i>14)
+                {
+                    printf("%c\n", http_data[i]);
+                }
+
+                printf("%c", http_data[i]);
+            }
+        }
 
 
-        //       break;
+  //      break;
 
 
     }
@@ -275,22 +267,6 @@ int main(int argc, char* argv[])
     return 0;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
