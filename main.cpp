@@ -1,7 +1,9 @@
 #include <pcap.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <arpa/inet.h>
+
 
 #define ETHERTYPE_IP  0x0800
 #define TCP_TYPE 6
@@ -30,17 +32,38 @@ struct ip_header
 
 struct tcp_header
 {
+    //    unsigned char sport[2];
+    //    unsigned char dport[2];
+    //    unsigned int sequence_number;
+    //    unsigned int acknum;
+    //    unsigned short Header_Length:4;
+    //    unsigned short Reserved:4;
+    //    unsigned short Flags:8;
+    //    unsigned short window;
+    //    unsigned short cheaksum;
+    //    unsigned short Urgentpoint;
+
     unsigned char sport[2];
     unsigned char dport[2];
     unsigned int sequence_number;
     unsigned int acknum;
-    unsigned short HrUAPRSF;
+    unsigned char ns:1;
+    unsigned char res:3;
+    unsigned char Header_len:4;
+    unsigned char fin:1;
+    unsigned char syn:1;
+    unsigned char rst:1;
+    unsigned char psh:1;
+    unsigned char ack:1;
+    unsigned char urg:1;
+    unsigned char ecn:1;
+    unsigned char cwr:1;
     unsigned short window;
     unsigned short cheaksum;
-    unsigned short offset;
+    unsigned short urgentpoint;
 };
 
-struct http_data;
+//struct http_data;
 
 void usage()
 {
@@ -133,7 +156,7 @@ int main(int argc, char* argv[])
 
         struct ip_header* iph;
 
-        iph = (struct ip_header *)packet;
+        iph = (struct ip_header *)(packet+14);
 
         unsigned short eth_type;
 
@@ -150,11 +173,11 @@ int main(int argc, char* argv[])
             {
                 if(i>2)
                 {
-                    printf("%u", iph -> sip[i]);
+                    printf("%d", iph -> sip[i]);
                     break;
                 }
 
-                printf("%u.", iph -> sip[i]);
+                printf("%d.", iph -> sip[i]);
             }
 
             printf("\n");
@@ -167,11 +190,11 @@ int main(int argc, char* argv[])
             {
                 if(i>2)
                 {
-                    printf("%u\n", iph -> dip[i]);
+                    printf("%d\n", iph -> dip[i]);
                     break;
                 }
 
-                printf("%u.", iph -> dip[i]);
+                printf("%d.", iph -> dip[i]);
             }
         }
 
@@ -199,10 +222,9 @@ int main(int argc, char* argv[])
 
             printf("sport = %d\n", ((th->sport[0])<<8)+(th->sport[1]));
 
-            printf("dport = %d\n", (th->dport[0]<<8)+(th->dport[1]));
+            printf("dport = %d\n",((th->dport[0]<<8)+(th->dport[1])));
 
         }
-
 
         else
         {
@@ -214,20 +236,35 @@ int main(int argc, char* argv[])
         printf("\n");
 
 
-        // http
-
- //       const unsigned char hd_data;
-
-
- //       hd_data = ntohs((iph->len)-(iph->Header_Length)-(th->offset));
-
-//        printf("=======HTTP DATA=======\n\n");
-
- //       printf("%c", hd_data);
+        //http
 
 
 
-  //      break;
+
+
+        const u_char* http_data;
+
+
+
+
+
+        //     printf("len = %d\n", sizeof(http_data));
+
+
+        //        hd = (packet+(iph->len)-((iph->Header_Length)<<2)-((th->Header_Length)<<2));
+
+
+        http_data = (packet+14+4*(iph->Header_Length)+4*(th->Header_len));
+
+
+        printf("=======HTTP DATA=======\n\n");
+
+
+
+            printf("%s\n", http_data);
+
+
+        //       break;
 
 
     }
